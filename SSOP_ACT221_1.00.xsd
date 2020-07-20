@@ -1,0 +1,2363 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- Схема содержит форматы данных, подаваемых в ЦМУ ССОП по приказу Роскомнадзора от 31.07.2019 № 221, 
+исключая данные об инцидентах (раздел приказа 9.20). 
+Версия схемы: 1.00 
+Дата создания схемы: 15.04.2020 
+-->
+
+<xs:schema xmlns:tns="http://noc.gov.ru/pirs-schema/1.00" xmlns="http://noc.gov.ru/pirs-schema/1.00" targetNamespace="http://noc.gov.ru/pirs-schema/1.00" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="ACT221" type="ACT221">
+        <!-- Ключи корневых объектов, одинаковых во всех приказах -->
+        <!-- Location, Actor, Document, NetworkNode, ConnectionLine, CommunicationEquipment -->
+        <xs:key name="ActorIdKey">
+            <xs:selector xpath="Actor" />
+            <xs:field xpath="ActorId" />
+        </xs:key>
+        <xs:key name="LocationIdKey">
+            <xs:selector xpath="Location" />
+            <xs:field xpath="LocationId" />
+        </xs:key>
+        <xs:key name="DocumentIdKey">
+            <xs:selector xpath="Document" />
+            <xs:field xpath="DocumentId" />
+        </xs:key>
+        <xs:key name="NNodeIdKey">
+            <xs:selector xpath="NetworkNode" />
+            <xs:field xpath="NnId" />
+        </xs:key>
+        <xs:key name="ClIdKey">
+            <xs:selector xpath="ConnectionLine" />
+            <xs:field xpath="ClId" />
+        </xs:key>
+        <xs:key name="CeIdKey">
+            <xs:selector xpath="CommunicationEquipment" />
+            <xs:field xpath="CeId" />
+        </xs:key>
+        <!-- ________________________________________________________________ -->
+
+        <!-- Ключи других конревых корневых объектов -->
+        <xs:key name="ReIdKey">
+            <xs:selector xpath="RoutingEquipment" />
+            <xs:field xpath="ReId" />
+        </xs:key>
+        <xs:key name="SnIdKey">
+            <xs:selector xpath="SignalingNode" />
+            <xs:field xpath="SnId" />
+        </xs:key>
+        <xs:key name="NmsIdKey">
+            <xs:selector xpath="NetworkManagementSystem" />
+            <xs:field xpath="NmsId" />
+        </xs:key>
+        <!-- ________________________________________________________________ -->
+
+        <!-- Ключи других объектов приказа -->
+        <xs:key name="AsIdKey">
+            <xs:selector xpath="AsOwnerData/AS" />
+            <xs:field xpath="AsId" />
+        </xs:key>
+        <xs:key name="DnsServerIdKey">
+            <xs:selector xpath="AsOwnerData/DnsServer" />
+            <xs:field xpath="DnsServerId" />
+        </xs:key>
+        <xs:key name="TrafficExchangePointIdKey">
+            <xs:selector xpath="AsOwnerData/TrafficExchangePoint" />
+            <xs:field xpath="TrafficExchangePointId" />
+        </xs:key>
+        <xs:key name="EcsnIdKey">
+            <xs:selector xpath="AsOwnerData/EmergencyCallServiceNode" />
+            <xs:field xpath="EcsnId" />
+        </xs:key>
+        <xs:key name="JunctionPointIdKey">
+            <xs:selector xpath="AsOwnerData/EmergencyCallServiceNode/EcsnJunctionPoint" />
+            <xs:field xpath="JunctionPointId" />
+        </xs:key>
+        <xs:key name="SyncEquipIdKey">
+            <xs:selector xpath="AsOwnerData/SyncGenerator" />
+            <xs:field xpath="SyncEquipId" />
+        </xs:key>
+        <xs:key name="TimeSynchronizationEquipmentIdKey">
+            <xs:selector xpath="AsOwnerData/TimeSynchronizationEquipment" />
+            <xs:field xpath="TimeSyncEquipId" />
+        </xs:key>
+        <!-- ________________________________________________________________ -->
+        <!-- Ссылки на базовые объекты -->
+        <!-- RFOrganization -->
+        <xs:keyref name="RFOrgActorLocationRef" refer="LocationIdKey">
+            <xs:selector xpath="Actor/RFOrganization/ActorLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+
+        <!-- ForeignOrganization -->
+        <xs:keyref name="ForeignOrgActorLocationRef" refer="LocationIdKey">
+            <xs:selector xpath="Actor/ForeignOrganization/ActorLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+
+        <!-- RFIE -->
+        <xs:keyref name="RFIEActorLocationRef" refer="LocationIdKey">
+            <xs:selector xpath="Actor/RFIE/ActorLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+
+        <!-- RFCitizen -->
+        <xs:keyref name="RFCitizenActorLocationRef" refer="LocationIdKey">
+            <xs:selector xpath="Actor/RFCitizen/ActorLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+
+        <!-- ForeignCitizen -->
+        <xs:keyref name="ForeignCitizenActorLocationRef" refer="LocationIdKey">
+            <xs:selector xpath="Actor/ForeignCitizen/ActorLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+
+        <!-- NetworkNode -->
+        <xs:keyref name="NnCarrierActorId" refer="ActorIdKey">
+            <xs:selector xpath="NetworkNode/NnCarrier" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="NnOwnerActorId" refer="ActorIdKey">
+            <xs:selector xpath="NetworkNode/NnOwner" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="NnLocationId" refer="LocationIdKey">
+            <xs:selector xpath="NetworkNode/NnLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+
+        <!-- CommunicationEquipment -->
+        <xs:keyref name="CeNNodeId" refer="NNodeIdKey">
+            <xs:selector xpath="CommunicationEquipment/CeNNode" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="CeLocationId" refer="LocationIdKey">
+            <xs:selector xpath="CommunicationEquipment/CeLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="CeStartOperationDocumentId" refer="DocumentIdKey">
+            <xs:selector xpath="CommunicationEquipment/CeStartOperationDocument" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="CeCrossBorderEquipmentUserId" refer="ActorIdKey">
+            <xs:selector xpath="CommunicationEquipment/CeCrossBorderEquipmentUser" />
+            <xs:field xpath="." />
+        </xs:keyref>
+
+        <!-- ConnectionLine -->
+        <xs:keyref name="ClLocationAId" refer="LocationIdKey">
+            <xs:selector xpath="ConnectionLine/ClLocationA" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="ClLocationBId" refer="LocationIdKey">
+            <xs:selector xpath="ConnectionLine/ClLocationB" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="ClNNodeAId" refer="NNodeIdKey">
+            <xs:selector xpath="ConnectionLine/ClNNodeA" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="ClNNodeBId" refer="NNodeIdKey">
+            <xs:selector xpath="ConnectionLine/ClNNodeB" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="ClLineEquipmentId" refer="CeIdKey">
+            <xs:selector xpath="ConnectionLine/ClLineEquipment" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="CrossBorderLineUserId" refer="ActorIdKey">
+            <xs:selector xpath="ConnectionLine/CrossBorderLineUser" />
+            <xs:field xpath="." />
+        </xs:keyref>
+
+        <!-- RoutingEquipment -->
+        <xs:keyref name="ReCeId" refer="CeIdKey">
+            <xs:selector xpath="RoutingEquipment/ReCeId" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="ReLocationId" refer="LocationIdKey">
+            <xs:selector xpath="RoutingEquipment/ReLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- SignalingNode -->
+        <xs:keyref name="SnNetworkNodeId" refer="NNodeIdKey">
+            <xs:selector xpath="SignalingNode/SnNetworkNode" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="SnLocationId" refer="LocationIdKey">
+            <xs:selector xpath="SignalingNode/SnLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- NetworkManagementSystem -->
+        <xs:keyref name="NmsNetworkNodeId" refer="NNodeIdKey">
+            <xs:selector xpath="NetworkManagementSystem/NmsNetworkNode" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- AsOwnerData -->
+        <xs:keyref name="OtuActorId" refer="ActorIdKey">
+            <xs:selector xpath="AsOwnerData/OtuActor" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- AS -->
+        <xs:keyref name="AsResponsibleId" refer="ActorIdKey">
+            <xs:selector xpath="AsOwnerData/AS/AsResponsible" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- DnsServer -->
+        <xs:keyref name="DnsServerNetworkNodeId" refer="NNodeIdKey">
+            <xs:selector xpath="AsOwnerData/DnsServer/DnsServerNetworkNode" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- CrossBorderLineEqLocation -->
+        <xs:keyref name="CrossBorderLineCeId" refer="CeIdKey">
+            <xs:selector xpath="AsOwnerData/CrossBorderLineEqLocation/CrossBorderLineCe" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="CrossBorderLineCeLocationId" refer="LocationIdKey">
+            <xs:selector xpath="AsOwnerData/CrossBorderLineEqLocation/CrossBorderLineCeLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="CrossBorderConnectionLineId" refer="ClIdKey">
+            <xs:selector xpath="AsOwnerData/CrossBorderLineEqLocation/CrossBorderConnectionLine" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- TrafficExchangePoint -->
+        <xs:keyref name="TrafficExchangePointLocationId" refer="LocationIdKey">
+            <xs:selector xpath="AsOwnerData/TrafficExchangePoint/TrafficExchangePointLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="TrafficExchangePointOwnerId" refer="ActorIdKey">
+            <xs:selector xpath="AsOwnerData/TrafficExchangePoint/TrafficExchangePointOwner" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- AdjacentASCrossBorderLineEquipment -->
+        <xs:keyref name="AdjacentAsCeId" refer="CeIdKey">
+            <xs:selector xpath="AsOwnerData/AdjacentASCrossBorderLineEquipment/AdjacentAsCe" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="AdjacentAsCeLocationId" refer="LocationIdKey">
+            <xs:selector xpath="AsOwnerData/AdjacentASCrossBorderLineEquipment/AdjacentAsCeLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="AdjacentAsConnectionLineId" refer="ClIdKey">
+            <xs:selector xpath="AsOwnerData/AdjacentASCrossBorderLineEquipment/AdjacentAsConnectionLine" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- NetworkNodeInfo -->
+        <xs:keyref name="NnId" refer="NNodeIdKey">
+            <xs:selector xpath="AsOwnerData/NetworkNodeInfo/Nn" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="NnAdjacentNnId" refer="NNodeIdKey">
+            <xs:selector xpath="AsOwnerData/NetworkNodeInfo/NnAdjacentNn" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="NnRoutingEquipmentId" refer="ReIdKey">
+            <xs:selector xpath="AsOwnerData/NetworkNodeInfo/NnRoutingEquipment" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- NetworkDirection -->
+        <xs:keyref name="NdNNodeAId" refer="NNodeIdKey">
+            <xs:selector xpath="AsOwnerData/NetworkDirection/NdNNodeA" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="NdNNodeBId" refer="NNodeIdKey">
+            <xs:selector xpath="AsOwnerData/NetworkDirection/NdNNodeB" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="NdRoutingEquipmentAId" refer="ReIdKey">
+            <xs:selector xpath="AsOwnerData/NetworkDirection/NdRoutingEquipmentA" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="NdRoutingEquipmentBId" refer="ReIdKey">
+            <xs:selector xpath="AsOwnerData/NetworkDirection/NdRoutingEquipmentB" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="NdConnectionLineId" refer="ClIdKey">
+            <xs:selector xpath="AsOwnerData/NetworkDirection/NdConnectionLine" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- CommunicationEquipmentInfo -->
+        <xs:keyref name="CeiCommunicationEquipmentId" refer="CeIdKey">
+            <xs:selector xpath="AsOwnerData/CommunicationEquipmentInfo/CommunicationEquipment" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="CeiConnectionLineId" refer="ClIdKey">
+            <xs:selector xpath="AsOwnerData/CommunicationEquipmentInfo/CeConnectionLine" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- EmergencyCallServiceNode -->
+        <xs:keyref name="EcsnNNodeId" refer="NNodeIdKey">
+            <xs:selector xpath="AsOwnerData/EmergencyCallServiceNode/EcsnNNode" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- SignalingNodeInfo -->
+        <xs:keyref name="SignalingNodeId" refer="SnIdKey">
+            <xs:selector xpath="AsOwnerData/SignalingNodeInfo/SignalingNode" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="SnAdjacentSigNodeId" refer="SnIdKey">
+            <xs:selector xpath="AsOwnerData/SignalingNodeInfo/SnAdjacentSigNode" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- SyncGenerator -->
+        <xs:keyref name="SyncEquipLocationId" refer="LocationIdKey">
+            <xs:selector xpath="AsOwnerData/SyncGenerator/SyncEquipLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="SyncEquipNetworkNodeId" refer="NNodeIdKey">
+            <xs:selector xpath="AsOwnerData/SyncGenerator/SyncEquipNetworkNode" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- TimeSynchronizationEquipment -->
+        <xs:keyref name="TimeSyncEquipLocationId" refer="LocationIdKey">
+            <xs:selector xpath="AsOwnerData/TimeSynchronizationEquipment/TimeSyncEquipLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="TimeSyncEquipNNodeId" refer="NNodeIdKey">
+            <xs:selector xpath="AsOwnerData/TimeSynchronizationEquipment/TimeSyncEquipNNode" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- NetworkManagementSystemInfo -->
+        <xs:keyref name="NmsInfoNmsId" refer="NmsIdKey">
+            <xs:selector xpath="AsOwnerData/NetworkManagementSystemInfo/Nms" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <xs:keyref name="NmsManagedNetworkNodeId" refer="NNodeIdKey">
+            <xs:selector xpath="AsOwnerData/NetworkManagementSystemInfo/NmsManagedNetworkNode" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- RoutingEquipment/ReTrafficInfo -->
+        <xs:keyref name="TaRouterId" refer="CeIdKey">
+            <xs:selector xpath="RoutingEquipment/ReTrafficInfo/TaRouterId" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- AsOwnerData/AS/AsIpRange -->
+        <xs:keyref name="IpRangeOwnerId" refer="ActorIdKey">
+            <xs:selector xpath="AsOwnerData/AS/AsIpRange/IpRangeOwner" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- AsOwnerData/AS/AsBGPRoutingInfo -->
+        <xs:keyref name="AsBGPRouteEquipLocationId" refer="LocationIdKey">
+            <xs:selector xpath="AsOwnerData/AS/AsBGPRoutingInfo/AsBGPRouteEquipLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        
+        <!-- AsOwnerData/EmergencyCallServiceNode/EcsnJunctionPoint -->
+        <xs:keyref name="JunctionPointLocationId" refer="LocationIdKey">
+            <xs:selector xpath="AsOwnerData/EmergencyCallServiceNode/EcsnJunctionPoint/JunctionPointLocation" />
+            <xs:field xpath="." />
+        </xs:keyref>
+        <!-- ________________________________________________________________ -->
+    </xs:element>
+    
+    <xs:complexType name="ACT221">
+        <xs:sequence>
+            <!-- Раздел служебных данных для учета служебных атрибутов xml файла, используемый для описания самого файла (время создания, источник и проч.) -->
+            <xs:element name="AdminData" type="AdminData">
+                <xs:annotation>
+                    <xs:documentation>Раздел служебных данных для учета служебных атрибутов xml файла, используемый для описания самого файла</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <!-- Раздел полезного содержимого, включает структурную информацию об объектах из соответствующих приказов -->
+            <!-- Владельцы автономных систем должны предоставить информацию: -->
+            <xs:element name="AsOwnerData" type="AsOwnerData" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Лица, имеющие номер автономной системы, обязаны представить следующую информацию (п.9 приказа)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <!-- Базовые объекты, на которые ссылаемся из OwnerData -->
+            <!-- Одинаковые во всех приказах: Location, Actor, Document, NetworkNode, ConnectionLine, CommunicationEquipment -->
+            <!-- Аннотации к базовым объектам отличаются для разных приказов, так как содержат ссылки на текст приказов -->
+            <xs:element name="Location" type="Location" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Информация обо всех местоположениях, упоминаемых в приказе 221:
+•	о местах подключения своих средств связи к линиям связи,  пересекающим государственную границу РФ (для каждого средства связи), включая местонахождение средства связи (п.9.9 приказа)
+•	о местонахождении точек обмена трафиком (9.10.2 приказа)
+•	о местах установки своих средств связи, подклюиенных к линиям связи, расположенным за пределами территории РФ, применяемых при взаимодействии со смежными автономными системами (п.9.11 приказа)
+•	местонахождение узлов связи (п.9.12.2 приказа)
+•	о местах установки средств связи, подключенных и (или) установленных на линиях связи на территории Российской Федерации и иностранных государств (п.9.14.5 приказа)
+•	местонахождение точек присоединения (п.9.15.1.3 приказа)
+•	местонахождение узлов передачи сигнальной информации (п.9.16.2 приказа)
+•	местонахождение оборудования синхронизации (п.9.17.1.4 приказа)
+•	местонахождение оборудования синхронизации времени (п.9.18.4 приказа)
+•	адреса регистрации или мест фактического пребывания всех лиц и орагнизаций, упоминаемых в приказе (пп.9.2.2, 9.3.1, 9.4, 9.10.5, 9.12.2.1, 9.14.12, 9.21 приказа)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Actor" type="Actor" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Сведения обо всех лицах и огранизациях, упоминаемых в приказе 221:
+•	о лице, которым выделены диапазоны сетевых адресов (п.9.2.2 приказа)
+•	о лице, использующих данную маршрутную информацию и связанный с ней номер автономной системы (п.9.3.1 приказа)
+•	об организации, ответственной за административно-техническое сопровождение и ведение информации об автономной системе (п.9.4 приказа)
+•	о лицах, владеющих точками обмена трафиком (п.9.10.5 приказа)
+•	о владельцах узлов связи, между которыми огранизованы линии связи, упоминаемые в приказе, а также о лицах, по адресам местонахождения которых расположены эти узлы связи (п.9.12.2.1 приказа)
+•	сведения о лице, использующем средства связи, установленные на линиях связи, пересекающих Государственную границу Российской Федерации (п.9.14.12 приказа)
+•	о лицах, использующих линии связи, пересекающие государственную границу РФ
+•	об организациях и лицах, ответственных  за эксплуатацию и аварийно-восстановительные работы на территории РФ и иностранного государства (п. 9.21 приказа) 
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Document" type="Document" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Сведения о документах, упоминаемых в приказе:
+•	документы, подтверждающие введение средств связи в эксплуатацию (п.9.14.11 приказа)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NetworkNode" type="NetworkNode" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Сведения об узлах связи, упоминаемых в приказе:
+•	Об узлах связи, функционирующих в составе сети связи оператора связи и смежных с ними узлах (п.9.12 приказа)
+•	Об узлах связи, между которыми организовано направление связи (п.9.13.3 приказа)
+•	Об оконечных узлах линий связи (п.9.13.1.1  приказа)
+•	Об узлах связи, в составе которых эксплуатируются средства связи  (п.9.14.4 приказа)
+•	Об узлах связи, в составе которых эксплуатируется система мониторинга (п.9.19 приказа)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CommunicationEquipment" type="CommunicationEquipment" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Сведения о средствах связи, упоминаемых в приказе (пп.9.9, 9.11, 9.14 приказа)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ConnectionLine" type="ConnectionLine" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Сведения о линиях связи, упоминаемых в приказе:
+•	о линиях связи, образующих направления связи (п.9.13.1, 9.13.6 приказа)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- ________________________________________________________________ -->
+
+            <!-- Одинаковые во всех приказах, либо отсутствуют: ConnectionLineResourceRenter, NetworkManagementSystem, MonitoringService -->
+            <xs:element name="RoutingEquipment" type="RoutingEquipment" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Сведения об оборудовании маршрутизации, применяемом в составе каждого узла связи, информация, позволяющая идентифицировать оборудование маршрутизации (9.12.8)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SignalingNode" type="SignalingNode" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Сведения об узлах передачи сигнальной информации, действующих в составе сети сигнализации (9.16.1 – 9.16.6)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NetworkManagementSystem" type="NetworkManagementSystem" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        Об организации системы управления и мониторинга средств связи оператора связи (при наличии нескольких, указать для каждой системы) (9.19)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- ________________________________________________________________ -->
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Раздел служебных данных для описания xml-файла -->
+    <xs:complexType name="AdminData">
+        <xs:annotation>
+            <xs:documentation>Раздел служебных данных для описания xml-файла</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="CarrierName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Имя оператора</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SwName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Название ПО</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SwVersion" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Версия ПО</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="FileDate" type="xs:date">
+                <xs:annotation>
+                    <xs:documentation>Дата формирования файла ПО оператора</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="XsdVersion" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Версия XSD</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Comment" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Комментарий при создании файла</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AsOwnerData">
+        <xs:sequence>
+            <xs:element name="AS" type="AS" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.1– П.9.7 Об имеющемся номере AS, сетевых адресах, маршрутной информации, отв. Организации, отв. лице, о маршрутах сообщений электросвязи
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DnsServer" type="DnsServer" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.8. О технических и программных средствах, средствах связи, используемых для выявления сетевых адресов, соответствующих доменным именам…
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CrossBorderLineEqLocation" type="CrossBorderLineEqLocation" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.9. О местах подключения своих средств связи к линиям связи, пересекающим Государственную границу…
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TrafficExchangePoint" type="TrafficExchangePoint" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.10. О точках обмена трафиком, к которым подключена автономная система…
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AdjacentASCrossBorderLineEquipment" type="AdjacentASCrossBorderLineEquipment" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.11. О местах установки своих средств связи…
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NetworkNodeInfo" type="NetworkNodeInfo" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.12. Об узлах связи…
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NetworkDirection" type="NetworkDirection" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.13. Сведения о топологии сети связи и о направлениях…
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CommunicationEquipmentInfo" type="CommunicationEquipmentInfo" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.12. Об узлах связи…
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EmergencyCallServiceNode" type="EmergencyCallServiceNode" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.15. Об узлах обслуживания вызовов экстренных оперативных служб…
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SignalingNodeInfo" type="SignalingNodeInfo" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.16. Об организации сигнальной сети
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SyncGenerator" type="SyncGenerator" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.17. О системе синхронизации
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TimeSynchronizationEquipment" type="TimeSynchronizationEquipment" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.18. О системе синхронизации времени
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NetworkManagementSystemInfo" type="NetworkManagementSystemInfo" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.19. Об организации системы управления и мониторинга…
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="OtuActor" type="ActorId" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        П.9.21. Сведения обо всех организациях и лицах, ответственных за эксплуатацию и аварийно-восстановительные работы на территории РФ и иностранного государства
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <!-- Объекты корня, одинаковые во всех приказах: -->
+    <!-- Location, Actor(включая вложения), Document, NetworkNode, ConnectionLine, CommunicationEquipment -->
+    <xs:complexType name="Location">
+        <xs:annotation>
+            <xs:documentation>Сведения о местоположениях.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="LocationId" type="LocationId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Уникальный номер местоположения в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Country" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Наименование государства, в котором находятся средства связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Address" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Адрес.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="QidFIAS" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Код ФИАС адреса местоположения.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CoordinateX" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Информация о местоположении установки средства связи в соответствии с государственными системами координат, предусмотренными постановлением Правительства Российской Федерации от 24 ноября 2016 г. N 1240.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CoordinateY" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Информация о местоположении установки средства связи в соответствии с государственными системами координат, предусмотренными постановлением Правительства Российской Федерации от 24 ноября 2016 г. N 1240.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CoordinateSystem" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Система указания координат.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="LocationId">
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+
+    <xs:complexType name="Actor">
+        <xs:annotation>
+            <xs:documentation>Сведения обо всех лицах и огранизациях.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ActorId" type="ActorId" minOccurs="1">
+            <xs:annotation>
+                <xs:documentation>Уникальный номер лица в ИС оператора.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:choice>
+                <xs:element name="RFOrganization" type="RFOrganization" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Российское юрлицо.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="ForeignOrganization" type="ForeignOrganization" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Иностранное юрлицо.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="RFIE" type="RFIE" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>ИП.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="RFCitizen" type="RFCitizen" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Гражданин РФ.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="ForeignCitizen" type="ForeignCitizen" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Иностранный гражданин (лицо без гражданства).</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="ActorId">
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+
+    <xs:complexType name="RFOrganization">
+        <xs:annotation>
+            <xs:documentation>Российские организации.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="FullName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Полное наименование.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ShortName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Сокращенное (при наличии) наименование.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="LegalForm" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Организационно-правовая форма.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="OGRN" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Основной государственный регистрационный номер.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:length value="13" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="INN" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ИНН.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:length value="10" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <!-- key-ref+ -->
+            <xs:element name="ActorLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Местонахождение: Адрес фактического осуществления деятельности.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ExecutiveOperationOfficer" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Информация о  должностном лице организации, ответственном за эксплуатацию и аварийно-восстановительные работы (фамилия, имя, отчество (при наличии), должность).</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="Phone" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Номер телефона.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Fax" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Номер факсимильной связи (при наличии).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Email" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Адрес электронной почты (при наличии).</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="ForeignOrganization">
+        <xs:annotation>
+            <xs:documentation>Иностранные организации.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="FullName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Полное наименование.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ShortName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Сокращенное (при наличии) наименование.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="LegalForm" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Организационно-правовая форма.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Country" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Наименование государства. Указывается по общероссийскому классификатору стран мира (ОКСМ) – двухбуквенный код.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TaxId" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Налоговый идентификатор.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TradeRegisterId" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Идентификатор в торговом реестре страны регистрации.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <!-- key-ref+ -->
+            <xs:element name="ActorLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Местонахождение: Адрес фактического осуществления деятельности.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ExecutiveOperationOfficer" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Информация о  должностном лице организации, ответственном за эксплуатацию и аварийно-восстановительные работы (фамилия, имя, отчество (при наличии), должность).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Phone" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Номер телефона.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="Fax" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Номер факсимильной связи (при наличии)..</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Email" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Адрес электронной почты (при наличии).</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="RFIE">
+        <xs:annotation>
+            <xs:documentation>Российские ИП.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="FirstName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Имя.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="LastName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Фамилия.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MiddleName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Отчество.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="OGRNIP" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Основной государственный регистрационный номер записи о государственной регистрации в качестве индивидуального предпринимателя.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:length value="15" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="INN" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ИНН.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:length value="12" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <!-- key-ref+ -->
+            <xs:element name="ActorLocation" type="LocationId" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Адрес регистрации по месту жительства (пребывания) или адрес места фактического проживания.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="IdDocument" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Документ, удостоверяющий личность: Номер, серия, дата выдачи, кто выдал, срок действия.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="Phone" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Номер телефона.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="Fax" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Номер факсимильной связи (при наличии).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Email" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Адрес электронной почты (при наличии).</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="RFCitizen">
+        <xs:annotation>
+            <xs:documentation>Граждане РФ.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="FirstName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Имя.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="LastName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Фамилия.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MiddleName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Отчество.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="InsuranceNumber" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Страховой номер индивидуального лицевого счета.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:length value="11" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="INN" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ИНН.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:length value="12" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <!-- key-ref+ -->
+            <xs:element name="ActorLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Адрес регистрации по месту жительства (пребывания) или адрес места фактического проживания.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IdDocument" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Документ, удостоверяющий личность: Номер, серия, дата выдачи, кто выдал, срок действия.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Phone" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Номер телефона.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="Fax" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Номер факсимильной связи (при наличии).</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="Email" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Адрес электронной почты (при наличии).</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="Position" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Должность в организации (при наличии).</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="ForeignCitizen">
+        <xs:annotation>
+            <xs:documentation>Иностранные граждане.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="FirstName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Имя.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="LastName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Фамилия.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MiddleName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Отчество.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Country" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Наименование государства. Указывается по общероссийскому классификатору стран мира (ОКСМ) – двухбуквенный код.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref+ -->
+            <xs:element name="ActorLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Адрес регистрации по месту жительства (пребывания) или адрес места фактического проживания.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IdDocument" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Документ, удостоверяющий личность: Номер, серия, дата выдачи, кто выдал, срок действия.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Phone" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Номер телефона.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Fax" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Номер факсимильной связи (при наличии).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Email" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Адрес электронной почты (при наличии).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Position" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Должность в организации (при наличии).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Document">
+        <xs:annotation>
+            <xs:documentation>Сведения о документах.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="DocumentId" type="DocumentId">
+                <xs:annotation>
+                    <xs:documentation>ID документа – уникальный идентификатор в ИС оператора или сгенерированный при выгрузке данных.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DocName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Наименование документа.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DocNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Номер документа.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DocDateFrom" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Дата подписания документа.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DocDateTo" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Срок действия документа.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="DocumentId">
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+
+    <xs:complexType name="NetworkNode">
+        <xs:annotation>
+            <xs:documentation>Сведения об узлах связи.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="NnId" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>ID узла связи оператора – уникальный идентификатор (номер) узла связи, используемый в системе нумерации сетевых элементов оператора связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NnName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Наименование узла связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NnShortName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Сокращенное наименование узла связи, используемое в системе управления и сообщениях об авариях.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref+ -->
+            <xs:element name="NnCarrier" type="ActorId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Имя оператора связи, владельца узла связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref+ -->
+            <xs:element name="NnOwner" type="ActorId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Наименование юридического лица, по адресу местонахождения которого размещен узел связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref+ -->
+            <xs:element name="NnLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Местонахождение узла связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NnAssignment" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Назначение узла связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NnStartOperationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Дата ввода узла связи в эксплуатацию.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NnAbonCapacity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Данные об абонентской емкости узла связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NnChannelCapacity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Данные о канальной емкости узла связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="NNodeId">
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+
+    <xs:complexType name="CommunicationEquipment">
+        <xs:annotation>
+            <xs:documentation>Сведения о средствах связи.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="CeId" type="CeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID средства связи в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CeName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Наименование средств связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CeShortName" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Сокращенное наименование средств связи, используемое в системе управления и сообщениях об авариях.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CeType" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Тип средства связи, например:
+                        Маршрутизатор
+                        MUX
+                        Оптический MUX
+                        Телефонный коммутатор
+                        Softswitch
+                        Базовая станция
+                        Контроллер базовой станции
+                        Система спутниковой связи
+                        Система радиорелейной связи
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="CeNNode" type="NNodeId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Наименование узла связи, в составе которого эксплуатируется средство связи .</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="CeLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Сведения о местах установки средств связи, подключенных и (или) установленных на линиях связи на территории Российской Федерации и иностранных государств.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CeModel" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Модель средства связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CeManufacturer" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Производитель.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CeStartOperationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Дата ввода в эксплуатацию средства связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CeOperationalLifeTime" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Предельный срок эксплуатации средства связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CePurposeOfUse" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Назначение и цели использования средств связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="CeStartOperationDocument" type="DocumentId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Сведения о документе, подтверждающем введение средств связи в эксплуатацию:
+                        •   Наименование документа
+                        •   Номер документа
+                        •   Дата документа
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="CeCrossBorderEquipmentUser" type="ActorId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Сведения о лице, использующем средства связи, установленные на линиях связи, пересекающих Государственную границу Российской Федерации:
+                           Российское юрлицо
+                           Иностранное юрлицо
+                           ИП
+                           Гражданин РФ
+                           Иностранный гражданин
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="CeId">
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+
+    <xs:complexType name="ConnectionLine">
+        <xs:annotation>
+            <xs:documentation>Сведения о линиях связи.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ClId" type="ClId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID соединительной линии в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ClName" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        Наименование линии связи(Сокращенное наименование соединительных линий связи, используемое в системе управления и сообщениях об авариях).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="ClLocationA" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Местоположение стороны A линии связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="ClLocationB" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Местоположение стороны B линии связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="ClNNodeA" type="NNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Наименование узла связи на стороне А.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="ClNNodeB" type="NNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Наименование узла связи на стороне В.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ClCapacity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Пропускная способность линии связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ClType" type="ClType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Тип линии связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ClTypeOther" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Тип линии связи, если не справочное значение.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="ClLineEquipment" type="CeId" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Формирующие линию средства связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="ClId">
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+    <xs:simpleType name="ClType">
+        <xs:annotation>
+            <xs:documentation>
+                ELECTRIC - Электрическая (проводная)
+                RADIO - Радиосвязь, Радиорелейная
+                OPTIC - Оптическая
+                SPUTNIK - Спутниковая
+                OTHER - Другое
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ELECTRIC" />
+            <xs:enumeration value="RADIO" />
+            <xs:enumeration value="OPTIC" />
+            <xs:enumeration value="SPUTNIK" />
+            <xs:enumeration value="OTHER" />
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- ________________________________________________________________ -->
+
+    <!-- Объекты корня, одинаковые во всех приказах, либо отсутствуют: -->
+    <!-- RoutingEquipment, SignalingNode, NetworkManagementSystem -->
+
+    <xs:complexType name="RoutingEquipment">
+        <xs:annotation>
+            <xs:documentation>Сведения об оборудовании маршрутизации, применяемом в составе каждого узла связи, информация, позволяющая идентифицировать оборудование маршрутизации.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ReId" type="ReId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID сетевого элемента  оператора – уникальный идентификатор (номер) сетевого элемента, используемый в системе нумерации сетевых элементов оператора связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.1. Полное наименование.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReShortName" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.2. Наименование оборудования маршрутизации, используемое в  системе управления сетями связи или средствах связи, и сообщениях об инцидентах (авариях)..</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReModel" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.3. Модель оборудования.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReManufacturer" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.4. Производитель оборудования.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReStartOperationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.5. Дата ввода оборудования в эксплуатацию.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReType" type="NeType" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.6. Тип оборудования маршрутизации - справочник.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="OtherReType" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Тип оборудования, если не из справочника.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReFullConnectionLineCapacity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.7. Сведения об общей пропускной способности соединительных линий.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReAllocatedConnectionLineCapacity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Сведения о задействованной пропускной способности соединительных линий.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReFullAccessLineCapacity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.8 Сведения об общей пропускной способности абонентских линий (при наличии).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReAllocatedAccessLineCapacity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Сведения о задействованной пропускной способности абонентских линий (при наличии).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReMonitored" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.9. Наличие возможности получения информации о состоянии оборудования от централизованной системы управления оператора связи (иного лица) для контроля состояния портов соединительных линий, загрузки и (или) перегрузки центрального процессора маршрутизатора, загрузки и (или) перегрузки портов соединительных линий.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReNmsName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Наименование системы управления и мониторинга.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReNmsManufacturer" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Производитель системы управления и мониторинга.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReNmsStartOperationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Дата ввода в эксплуатацию управления и мониторинга.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReIpAddress" type="IpAddr" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.10. Сетевой адрес маршрутизатора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReCode" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.11. Внутреннее символьное обозначение маршрутизатора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="ReCeId" type="CeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID средства связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="ReLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Географическое месторасположение маршрутизатора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReAsNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.12. Номер автономной системы на стороне маршрутизатора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReNmsIpAddress" type="IpAddr" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.13. Сетевой адрес маршрутизатора, необходимый для его мониторинга.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReOsName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.14. Производитель операционной системы маршрутизатора, тип операционной системы маршрутизатора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReOsVersion" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Версия ОС маршрутизатора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReOsManufacturer" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Производитель ОС маршрутизатора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReSnmpInfo" type="SnmpInfo" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.15. Дополнительная информация, необходимая для получения данных о сетевых адресах оборудования связи, идентификационных данных для автоматического получения информации от оборудования связи и систем управления.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReTrafficInfo" type="TrafficInfo" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.16-17. Сведения о характеристиках трафика.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="ReId">
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+    <xs:simpleType name="NeType">
+        <xs:annotation>
+            <xs:documentation>
+                IP ROUTER           IP маршрутизатор
+                IP L3 SWITCH        IP L3 коммутатор
+                IP SOFT ROUTER      IP программный коммутатор
+                OTHER NE TYPE       Другое
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="IP ROUTER" />
+            <xs:enumeration value="IP L3 SWITCH" />
+            <xs:enumeration value="IP SOFT ROUTER" />
+            <xs:enumeration value="OTHER NE TYPE" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SnmpInfo">
+        <xs:annotation>
+            <xs:documentation>Дополнительная информация, необходимая для получения данных о сетевых адресах оборудования связи, идентификационных данных для автоматического получения информации от оборудования связи и систем управления.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="SnmpProtocol" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Версия протокола snmp.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnmpCommunity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Комьюнити для v2c.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnmpUserName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Имя пользователя для v3.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnmpAutorisation" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Алгоритм авторизации (если используется).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnmpAuthorizationKey" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Ключ авторизации.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="SnmpEncryptionAlgorithm" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Алгоритм шифрования.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnmpEncryptionKey" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Ключ шифрования.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnmpEngineId" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>EngineID, если он задан в конфигурации статически.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="TrafficInfo">
+        <xs:annotation>
+            <xs:documentation>Сведения о характеристиках трафика .</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="TrafficAuditIpAddr" type="IpAddr" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.8.16. Сетевой адрес маршрутизатора, необходимый для отправки сведений о характеристиках трафика в информационную систему.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TaRouterName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Внутреннее символьное обозначение маршрутизатора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="TaRouterId" type="CeId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ID маршрутизатора в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TaPort" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Порт.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TaDescr" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Описание (для указания производителя и типа операционной системы маршрутизатора).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SignalingNode">
+        <xs:annotation>
+            <xs:documentation>Сведения об узлах передачи сигнальной информации, действующих в составе сети сигнализации.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="SnId" type="SignalingNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID узла передачи сигнальной информации в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.16.1. Сведения об узлах передачи сигнальной информации, действующих в составе сети сигнализации: 
+                                        • полное наименование
+                    .</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnShortName" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Наименование узла передачи сигнальной информации, используемое в системе управления и сообщениях об авариях.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnSPC" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+                <xs:documentation>Код сигнальной точки.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <!-- key-ref -->
+            <xs:element name="SnNetworkNode" type="NNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Узел связи, на котором расположен узел передачи информации.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="SnLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.16.2. Место нахождения оборудования: наименование государства, адрес и (или) информация о местоположении в соответствии  с  государственными системами координат, предусмотренными постановлением Правительства Российской Федерации N 1240.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnManufacturer" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.16.3. Производитель узла передачи сигнальной информации.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnStartOperationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.16.4. Дата ввода в эксплуатацию.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnCapacity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.16.5. Данные о емкости сигнальных линий узлов передачи сигнальной информации.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.16.6. Идентификатор (номер) в системе нумерации сетевых элементов оператора связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SnCarrierName" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>9.16.7. Оператор узла передачи сигнальной информации.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="SignalingNodeId">
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+
+    <xs:complexType name="NetworkManagementSystem">
+        <xs:annotation>
+            <xs:documentation>Об организации системы управления и мониторинга средств связи оператора связи.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="NmsId" type="NmsId" minOccurs="1">
+            <xs:annotation>
+                <xs:documentation>ID системы управления в ИС оператора.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="NmsName" type="xs:string" minOccurs="1">
+            <xs:annotation>
+                <xs:documentation>Наименование системы управления и мониторинга.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="NmsManufacturer" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Производитель.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="NmsStartOperationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Дата ввода в эксплуатацию.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="NmsNetworkNode" type="NNodeId" minOccurs="1">
+            <xs:annotation>
+                <xs:documentation>Узел связи оборудования.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="NmsId">
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+    <!-- ________________________________________________________________ -->
+
+    <!-- Объекты из OwnerData, дополняющие корневые: -->
+    <!-- NetworkNodeInfo, CommunicationEquipmentInfo, SignalingNodeInfo, NetworkManagementSystemInfo -->
+    <!-- Могут отличаться в разных приказах! -->
+    
+    <xs:complexType name="NetworkNodeInfo">
+        <xs:annotation>
+            <xs:documentation>Сведения о связях узлов связи между собой и с оборудованием маршрутизации.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- key-ref+ -->
+            <xs:element name="Nn" type="NNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID соединительной линии в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="NnAdjacentNn" type="NNodeId" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+                <xs:documentation>9.12.6. Смежные узлы связи, с указанием их идентификаторов (номеров) в системе нумерации сетевых элементов оператора связи– для своего узла и узлы чужих операторов (в этом случае вносится вся информация о внешнем узле).</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="NnPriorityChannelsNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.12.7. Количество приоритетных каналов связи, используемых пользователями сетей связи специального назначения, подключенных к узлу связи (при наличии) – для своего узла.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref+ -->
+            <xs:element name="NnRoutingEquipment" type="ReId" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+                <xs:documentation>9.12.8. Сведения об оборудовании маршрутизации, применяемом в составе каждого узла связи, информация, позволяющая идентифицировать оборудование маршрутизации – для своего узла.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="CommunicationEquipmentInfo">
+        <xs:annotation>
+            <xs:documentation>Сведения о средствах связи, дополненные уникальными атрибутами.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- key-ref -->
+            <xs:element name="CommunicationEquipment" type="CeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID средства сввязи в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="CeConnectionLine" type="ClId" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+                <xs:documentation>Линии связи, связанные со средством связи.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="SignalingNodeInfo">
+        <xs:annotation>
+            <xs:documentation>Сведения о связях узлов передачи сигнальной информации.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- key-ref -->
+            <xs:element name="SignalingNode" type="SignalingNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID средства сввязи в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="SnAdjacentSigNode" type="SignalingNodeId" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+                <xs:documentation>9.16.7. Смежные узлы передачи сигнальной информации, с указанием их идентификаторов (номеров) в системе нумерации сетевых элементов оператора связи, наименование оператора связи и (или) владельца смежного узла передачи сигнальной информации.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="NetworkManagementSystemInfo">
+        <xs:annotation>
+            <xs:documentation>Сведения об организации системы управления и мониторинга средств связи, дополненные уникальными атрибутами.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Nms" type="NmsId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID средства сввязи в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NmsManagedNetworkNode" type="NNodeId" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+                <xs:documentation>9.19.3. Данные о закреплении узлов за сетевой системой управления.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- ________________________________________________________________ -->
+
+    <!-- Прочие объекты из OwnerData: -->
+
+    <xs:complexType name="AS">
+        <xs:annotation>
+            <xs:documentation>Автономные системы.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="AsId" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID автономной системы в ИС оператора (при наличии, либо номер автономной системы).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AsNumber" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.1. Об имеющемся у них номере автономной системы….</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AsRegistrar" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.1. … а также наименование организации, которая осуществила регистрацию номера автономной системы.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AsIpRange" type="IpRange" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        9.2. О сетевых адресах (диапазонах сетевых адресов).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AsRouteInfo" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.3. О маршрутной информации – в данном поле указывается  идентификатор в AsRegistrar. 
+Детальная информация предоставляется владельцем AS в реестр РАНР
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="AsResponsible" type="ActorId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.4. Об организации, ответственной за административно-техническое сопровождение и ведение информации об автономной системе.
+9.5. О лице, ответственном за административно-техническое сопровождение и ведение информации об автономной системе.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AsBGPRoutingInfo" type="AsBGPRoutingInfo" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        О маршрутах сообщений электросвязи (п.9.7 приказа)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="IpRange">
+        <xs:annotation>
+            <xs:documentation>Диапазоны сетевых адресов.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="IpRangeAsNumber" type="xs:string" minOccurs="1">
+            <xs:annotation>
+                <xs:documentation>Ссылка на номер AS.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="IpRangeSubnet" type="IpSubnet" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Сетевые адреса, входящие в диапазон.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IpRangeDescr" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.2.1. Краткое наименование диапазонов сетевых адресов.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="IpRangeOwner" type="ActorId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.2.2. Наименование организации или сведения о лице, которым выделены диапазоны сетевых адресов.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IpRangeSource" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>9.2.3. Источник информации о сетевых адресах (диапазонах сетевых адресов), принадлежащих автономной системе, и об используемых лицами, имеющими номер автономной системы, сетевых адресах.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="AsBGPRoutingInfo">
+        <xs:annotation>
+            <xs:documentation>Маршруты сообщения электросвязи.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="AsBGPRouterIpAddress" type="IpAddr" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>9.7.1. Сетевые адреса.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AsBGPRouterEquipName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.7.2. Идентификационные данные оборудования, необходимые для автоматического получения сведений о маршрутах сообщений электросвязи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="AsBGPRouteEquipLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Географическое месторасположение маршрутизатора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AsBGPRouterAsNumber" type="xs:string" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Ссылка на номер AS на стороне маршрутизатора.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="AsBGPMonitoringAgentASNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Номер AS на стороне агента ИС “Мониторинг”.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AsBGPHoldTime" type="xs:integer" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Holdtime.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AsBGPMd5" type="xs:integer" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>Ключ MD5, если используется.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="DnsServer">
+        <xs:annotation>
+            <xs:documentation>О технических и программных средствах, средствах связи, используемых для выявления сетевых адресов, соответствующих доменным именам.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="DnsServerId" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Уникальный ID сервера DNS в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DnsServerName" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Имя DNS сервера.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DnsServerModel" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.8.1. Тип технических и программных средств.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DnsServerManufacturer" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Производитель технических средств.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DnsSoftwareName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Наименование ПО.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DnsSoftwareVersion" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Версия ПО.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DnsServerIpAddress" type="IpAddr" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Выделенный техническому и (или) программному средству сетевой адрес.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DnsZone" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Список зон доменных имен.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="DnsServerNetworkNode" type="NNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Связанный узел связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="CrossBorderLineEqLocation">
+        <xs:annotation>
+            <xs:documentation>Места подключения своих средств связи к линиям связи, пересекающим государственную границу РФ.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- key-ref -->
+            <xs:element name="CrossBorderLineCe" type="CeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Наименование средства связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="CrossBorderLineCeLocation" type="LocationId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.9. Местонахождение средства связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="CrossBorderConnectionLine" type="ClId" minOccurs="1" maxOccurs="unbounded">
+            <xs:annotation>
+                <xs:documentation>Связь средства связи и линии связи.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="TrafficExchangePoint">
+        <xs:annotation>
+            <xs:documentation>Точки обмена трафиком.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="TrafficExchangePointId" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID точки обмена трафиком в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TrafficExchangePointName" type="xs:string" minOccurs="1">
+            <xs:annotation>
+                <xs:documentation>9.10.1. Наименование точки обмена трафиком.</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+            <xs:element name="TrafficExchangePointIpAddr" type="IpAddr" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Сетевые адреса, выделенные собственнику или иному владельцу ТОТ и сетевые адреса, используемые собственником или иным владельцем ТОТ.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="TrafficExchangePointLocation" type="LocationId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.10.2 – 9.10.4 Местонахождение точки обмена трафиком.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="TrafficExchangePointOwner" type="ActorId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.10.5. Информация о владельце точки обмена трафиком: 
+                                    	Российское юрлицо
+                                    	Иностранное юрлицо
+                                    	ИП
+                                    	Гражданин РФ
+                                    	Иностранный гражданин
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="AdjacentASCrossBorderLineEquipment">
+        <xs:annotation>
+            <xs:documentation>Места установки своих средств связи, подключенных к линиям связи, расположенным за пределами территории РФ.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- key-ref -->
+            <xs:element name="AdjacentAsCe" type="CeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.11.1. Наименование средств связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AdjacentAsNumber" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>9.11.2 Номер смежной автономной системы, с которой взаимодействует средство связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="AdjacentAsCeLocation" type="LocationId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.11.3. Местонахождение средства связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="AdjacentAsConnectionLine" type="ClId" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Связь оборудования и линии связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="NetworkDirection">
+        <xs:annotation>
+            <xs:documentation>Топология сети связи и направления связи.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- key-ref -->
+            <xs:element name="NdNNodeA" type="NNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.13.3. Об узлах связи, между которыми организовано направление связи, наименование оконечных узлов (сторона А).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="NdNNodeB" type="NNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.13.3. Об узлах связи, между которыми организовано направление связи, наименование оконечных узлов (сторона В).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="NdRoutingEquipmentA" type="ReId" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>9.13.4. Об оборудовании маршрутизации, задействованном для организации направления связи на оконечных узлах, наименование оборудования, модель оборудования, производитель, дата ввода в эксплуатацию (сторона А).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="NdRoutingEquipmentB" type="ReId" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>9.13.4. Об оборудовании маршрутизации, задействованном для организации направления связи на оконечных узлах, наименование оборудования, модель оборудования, производитель, дата ввода в эксплуатацию (сторона В).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NdCapacity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.13.5. О емкости направления связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="NdConnectionLine" type="ClId" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>9.13.6. Перечень соединительных линий, образующих направление связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NdStartOperationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.13.7. Дата ввода в эксплуатацию направления связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="EmergencyCallServiceNode">
+        <xs:annotation>
+            <xs:documentation>Узлы обслуживания вызовов оперативных экстренных служб.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- key-ref -->
+            <xs:element name="EcsnId" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID узла связи в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EcsnNNode" type="NNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.15. Об узлах обслуживания вызовов экстренных оперативных служб.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EcsnJunctionPoint" type="JunctionPoint" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>9.15.1. Данные об организации присоединения сетей телефонной связи.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="JunctionPoint">
+        <xs:annotation>
+            <xs:documentation>Данные об организации присоединения сетей телефонной связи.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="JunctionPointId" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>ID точки присоединения в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="JunctionPointName" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.15.1. Данные об организации присоединения сетей телефонной связи:
+                                        •	Наименование точки присоединения
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="JunctionType" type="JunctionType" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Тип присоединения.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="JunctionPointCapacity" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Емкость канала связи присоединения – кол-во соединительных линий.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="JunctionPointSignaling" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Используемая сигнализация – например ОКС, SIP.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="JunctionPointLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Местонахождение точки присоединения.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="JunctionType">
+        <xs:annotation>
+            <xs:documentation>Типы присоединения.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="IP" />
+            <xs:enumeration value="TDM" />
+        </xs:restriction>
+    </xs:simpleType>   
+
+    <xs:complexType name="SyncGenerator">
+        <xs:annotation>
+            <xs:documentation>Данные о параметрах сетевых и узловых генераторов синхросигналов.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="SyncEquipId" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Уникальный ID оборудования в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SyncEquipName" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.17.1.1.Наименование оборудования синхронизации.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SyncEquipModel" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.17.1.2.Модель оборудования.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SyncEquipManufacturer" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Производитель.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SyncEquipStartOperationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.17.1.3.Дата ввода оборудования в эксплуатацию.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="SyncEquipLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.17.1.4.Место нахождения оборудования: 
+                                        •   наименование государства, 
+                                        •   адрес и (или) информация о местоположении в соответствии  с  государственными системами координат, предусмотренными постановлением Правительства Российской Федерации N 1240.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="SyncEquipNetworkNode" type="NNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Узел связи оборудования.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SyncEquipType" type="SyncEquipType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Тип генераторов синхросигналов.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="SyncEquipType">
+        <xs:annotation>
+            <xs:documentation>Тип генераторов синхросигналов.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PZG" />
+            <xs:enumeration value="VZG" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="TimeSynchronizationEquipment">
+        <xs:annotation>
+            <xs:documentation>Система синхронизации времени.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="TimeSyncEquipId" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Уникальный ID оборудования в ИС оператора.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TimeSyncEquipName" type="xs:string" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>9.18.1.Наименование оборудования синхронизации.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TimeSyncEquipModel" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.18.2. Модель оборудования.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TimeSyncEquipManufacturer" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Производитель.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TimeSyncEquipStartOperationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.18.3.Дата ввода оборудования в эксплуатацию.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="TimeSyncEquipLocation" type="LocationId" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>9.18.4.Место нахождения оборудования: 
+                                    •   наименование государства, 
+                                    •   адрес и (или) информация о местоположении в соответствии  с  государственными системами координат, предусмотренными постановлением Правительства Российской Федерации N 1240.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- key-ref -->
+            <xs:element name="TimeSyncEquipNNode" type="NNodeId" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Узел связи оборудования.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>   
+    <!-- ________________________________________________________________ -->
+    <!-- Вводятся форматы данных IpAddr и IpSubnet -->
+    <xs:simpleType name="IPv4">
+        <xs:annotation>
+            <xs:documentation>[0-255].[0-255].[0-255].[0-255], где [0-255] – число от 0 до 255</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}(/([1-2]?[0-9]|3[0-2]))?$" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="IPv6">
+        <xs:annotation>
+            <xs:documentation>[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx], где [xxxx] – это строка длиной от 0 до 4 символов из набора {0-9, a-f, A-F}</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="((^|:)([0-9a-fA-F]{0,4})){1,8}(/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="IPv4_subnet">
+        <xs:annotation>
+            <xs:documentation>[0-255].[0-255].[0-255].[0-255]/[0-32]</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}(/([1-2]?[0-9]|3[0-2]))" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="IPv6_subnet">
+        <xs:annotation>
+            <xs:documentation>[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]/[0-128]</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="((^|:)([0-9a-fA-F]{0,4})){1,8}(/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="IpAddr">
+        <xs:annotation>
+            <xs:documentation>IP-адрес IPv4/IPv6 или подсеть IPv4/IPv6</xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="IPv4" type="IPv4" minOccurs="0" />
+            <xs:element name="IPv6" type="IPv6" minOccurs="0" />
+            <xs:element name="IPv4_subnet" type="IPv4_subnet" minOccurs="0" />
+            <xs:element name="IPv6_subnet" type="IPv6_subnet" minOccurs="0" />
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="IpSubnet">
+        <xs:annotation>
+            <xs:documentation>Подсеть IPv4/IPv6</xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="IPv4_subnet" type="IPv4_subnet" minOccurs="0" />
+            <xs:element name="IPv6_subnet" type="IPv6_subnet" minOccurs="0" />
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>
